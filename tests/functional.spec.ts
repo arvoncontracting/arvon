@@ -138,6 +138,18 @@ test('mobile menu traps focus, navigates and closes', async ({ page }) => {
   await expect(page.locator('#experience h2')).toBeInViewport({ timeout: 6000 });
 });
 
+for (const delay of [0, 120, 200, 280, 400]) {
+  test(`anchor jump survives motion starting ${delay}ms after the first tap`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 780 });
+    await open(page);
+    await page.getByRole('button', { name: 'فتح القائمة' }).click();
+    const menu = page.locator('dialog.mobile-menu');
+    await page.waitForTimeout(delay);
+    await menu.getByRole('link', { name: 'خبراتنا' }).click();
+    await expect(page.locator('#experience h2')).toBeInViewport({ timeout: 6000 });
+  });
+}
+
 test('skip link and keyboard focus are visible', async ({ page }) => {
   await open(page);
   await page.keyboard.press('Tab');

@@ -117,7 +117,7 @@ function desktopScenes() {
   waterproofingStage();
 }
 
-export function initMotion() {
+export async function initMotion() {
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
   document.documentElement.setAttribute('data-motion', '');
@@ -128,5 +128,6 @@ export function initMotion() {
   const media = gsap.matchMedia();
   media.add('(min-width: 1024px)', desktopScenes);
 
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  await document.fonts?.ready;
+  ScrollTrigger.refresh();
 }
