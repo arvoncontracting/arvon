@@ -1,0 +1,227 @@
+.asphalt {
+  position: relative;
+  background: var(--charcoal);
+  color: var(--white);
+}
+
+.road {
+  position: relative;
+  overflow: hidden;
+  background: var(--charcoal);
+}
+
+.road__photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.road__photo picture {
+  height: 100%;
+}
+
+.road__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--charcoal) 0, rgb(31 35 38 / 0%) 42%);
+}
+
+.road__head {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-top: -36px;
+}
+
+.road__head h2 {
+  font-size: clamp(1.9rem, 1rem + 5.2vw, 5.6rem);
+  line-height: 1.3;
+}
+
+.road__latin {
+  font-size: clamp(0.9rem, 0.8rem + 0.5vw, 1.2rem);
+  font-weight: 600;
+  color: var(--sand);
+}
+
+.road__track-area {
+  position: relative;
+  margin-top: 28px;
+  padding-bottom: 36px;
+}
+
+.road__track {
+  position: absolute;
+  top: 0;
+  bottom: 36px;
+  right: calc(var(--gutter) + 8px);
+  width: 6px;
+  background: repeating-linear-gradient(to bottom, var(--line-on-dark) 0 22px, transparent 22px 34px);
+}
+
+.road__fill {
+  width: 100%;
+  height: 100%;
+  background: var(--orange);
+  transform-origin: top;
+}
+
+.road__steps {
+  display: grid;
+  gap: 22px;
+  padding-inline-start: 44px;
+}
+
+.road__step {
+  display: grid;
+  gap: 0;
+}
+
+.road__step strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.road__step-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sand);
+}
+
+.road__step span:last-child {
+  color: var(--muted-on-dark);
+}
+
+@media (min-width: 1024px) {
+  .road {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    min-height: 640px;
+    padding-top: calc(var(--header-height) + 32px);
+  }
+
+  .road__photo {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+
+  .road__scrim {
+    background:
+      linear-gradient(to top, rgb(31 35 38 / 94%) 0, rgb(31 35 38 / 20%) 44%),
+      linear-gradient(to bottom, rgb(31 35 38 / 70%) 0, rgb(31 35 38 / 0%) 36%),
+      linear-gradient(to left, rgb(31 35 38 / 62%) 0, rgb(31 35 38 / 0%) 60%);
+  }
+
+  .road__head {
+    width: 100%;
+    margin-top: 0;
+    max-width: 1640px;
+  }
+
+  .road__head h2 {
+    max-width: 11em;
+    font-size: clamp(2.4rem, 3.9vw, 4.4rem);
+    text-shadow: 0 2px 24px rgb(31 35 38 / 45%);
+  }
+
+  .road__track-area {
+    width: 100%;
+    margin-top: 0;
+    padding-block: 32px 40px;
+  }
+
+  .road__track {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 6px;
+    margin-bottom: 18px;
+    background: repeating-linear-gradient(to left, var(--line-on-dark) 0 40px, transparent 40px 62px);
+  }
+
+  .road__fill {
+    transform-origin: right;
+  }
+
+  .road__steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding-inline-start: 0;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html[data-js] .road__step {
+    transition: opacity 0.35s;
+  }
+
+  html[data-js] .road__step:not(.is-active, .is-done) {
+    opacity: 0.72;
+  }
+
+  html[data-js] .road__step.is-active strong {
+    color: var(--orange);
+  }
+}
+
+.asphalt__detail {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  padding-block: clamp(32px, 6vw, 96px) calc(var(--edge-height) + 56px);
+}
+
+.asphalt__lead {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1rem + 1.2vw, 2rem);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.asphalt__index {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--sand);
+}
+
+.asphalt__uses h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--sand);
+}
+
+.asphalt__uses ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  margin-top: 6px;
+}
+
+.asphalt__uses li {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.service__note--dark p {
+  color: var(--muted-on-dark);
+}
+
+@media (min-width: 1024px) {
+  .asphalt__detail {
+    grid-template-columns: 7fr 5fr;
+    gap: 40px clamp(40px, 6vw, 112px);
+    align-items: start;
+  }
+
+  .asphalt__lead {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+}

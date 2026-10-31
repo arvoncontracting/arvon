@@ -1,0 +1,34 @@
+:root {
+  /* Brand palette, ARVON Brand Guidelines v1.0 */
+  --orange: #e65a1f;
+  --charcoal: #1f2326;
+  --stone: #6b6f72;
+  --sand: #d9c6a2;
+  --white: #ffffff;
+
+  /* Neutral surface drawn from the brand board's background */
+  --paper: #f6f4ef;
+  --line: rgb(31 35 38 / 16%);
+  --line-on-dark: rgb(255 255 255 / 22%);
+  --muted-on-dark: #d4d6d7;
+  /* Stone darkened for small text; brand Stone Gray misses AA on paper and sand */
+  --stone-text: #54585b;
+
+  --font-display: 'Montserrat', 'Noto Kufi Arabic', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-body: 'Inter', 'IBM Plex Sans Arabic', 'Noto Kufi Arabic', system-ui, sans-serif;
+
+  --gutter: clamp(16px, 4.6vw, 80px);
+  --section-space: clamp(72px, 10vw, 168px);
+  --header-height: 72px;
+  --edge-height: clamp(48px, 8vw, 150px);
+
+  /* Skew that matches the 51.4 degree roof stroke of the symbol */
+  --slope-skew: -38.6deg;
+  --ease-engineered: cubic-bezier(0.65, 0, 0.2, 1);
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --header-height: 84px;
+  }
+}

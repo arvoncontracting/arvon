@@ -1,0 +1,73 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  color: var(--white);
+}
+
+.intro__rig {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320vmax;
+  height: 320vmax;
+}
+
+.intro__plane {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50.1%;
+  background: var(--charcoal);
+  will-change: transform;
+}
+
+.intro__plane--a { top: 0; }
+.intro__plane--b { bottom: 0; }
+
+.intro__welcome {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-inline: var(--gutter);
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 5.4vw, 3.6rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.intro__logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(230px, 34vw, 460px);
+  margin-left: calc(clamp(230px, 34vw, 460px) / -2);
+  margin-top: calc(clamp(230px, 34vw, 460px) * -0.333);
+  visibility: hidden;
+  will-change: transform;
+}
+
+.intro__logo svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.intro__skip {
+  position: absolute;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: max(20px, env(safe-area-inset-left));
+  min-height: 44px;
+  padding: 6px 20px;
+  border: 1px solid var(--line-on-dark);
+  background: rgb(31 35 38 / 60%);
+  color: var(--white);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.intro__skip:hover {
+  border-color: var(--white);
+}

@@ -1,0 +1,411 @@
+/* Section heading */
+.section-tab {
+  position: relative;
+  display: inline-block;
+  padding-inline-start: 46px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+/* Directional marker with the symbol's slope. Charcoal on orange misses AA at this size. */
+.section-tab::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 30px;
+  height: 14px;
+  margin-top: -7px;
+  background: var(--orange);
+  transform: skewX(var(--slope-skew));
+}
+
+.section-heading {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+  max-width: 900px;
+  margin-bottom: clamp(36px, 5vw, 80px);
+}
+
+.section-heading h2 {
+  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3.5rem);
+  line-height: 1.4;
+}
+
+.section-heading__body {
+  max-width: 62ch;
+  font-size: 1.1em;
+}
+
+.heading-divider {
+  color: var(--orange);
+  font-weight: 500;
+}
+
+/* Section edge */
+.section-edge {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  z-index: 3;
+  height: var(--edge-height);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  transform-origin: bottom;
+  pointer-events: none;
+}
+
+.section-edge--flip {
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.section-edge--white { background: var(--white); }
+.section-edge--paper { background: var(--paper); }
+.section-edge--charcoal { background: var(--charcoal); }
+.section-edge--sand { background: var(--sand); }
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 28px;
+  border: 2px solid transparent;
+  background: none;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.button .icon {
+  flex: none;
+}
+
+.button--small {
+  min-height: 44px;
+  padding: 4px 18px;
+}
+
+/* 19px bold is WCAG large text; charcoal on brand orange is 4.39:1, enough only at this size. */
+.button--primary {
+  background: var(--orange);
+  color: var(--charcoal);
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 700;
+}
+
+.button--primary:hover {
+  background: var(--white);
+  border-color: var(--orange);
+}
+
+.button--on-dark {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+.button--on-dark:hover {
+  background: var(--white);
+  color: var(--charcoal);
+}
+
+.button--ghost {
+  border-color: var(--charcoal);
+  color: var(--charcoal);
+}
+
+.button--ghost:hover {
+  background: var(--charcoal);
+  color: var(--white);
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+
+/* Header */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  color: var(--white);
+  transition: background-color 0.3s, opacity 0.5s;
+}
+
+.site-header.is-scrolled {
+  background: var(--charcoal);
+}
+
+html[data-intro] .site-header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: var(--header-height);
+  padding-inline: var(--gutter);
+}
+
+.site-header__mark {
+  width: 168px;
+  height: auto;
+}
+
+@media (min-width: 1200px) {
+  .site-header__mark {
+    width: 192px;
+  }
+}
+
+.site-header__logo {
+  display: block;
+  flex: none;
+}
+
+.site-header__nav {
+  display: none;
+  flex: 1;
+}
+
+.site-header__nav ul {
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 1.9vw, 34px);
+}
+
+.site-header__nav a {
+  position: relative;
+  display: inline-block;
+  padding-block: 8px;
+  font-size: 0.97rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-header__nav a::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 2px;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s var(--ease-engineered);
+}
+
+.site-header__nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.site-header__cta {
+  display: none;
+  flex: none;
+}
+
+.site-header__toggle {
+  margin-inline-start: auto;
+  color: var(--white);
+}
+
+@media (min-width: 560px) {
+  .site-header__cta {
+    display: inline-flex;
+    margin-inline-start: auto;
+  }
+
+  .site-header__toggle {
+    margin-inline-start: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .site-header__nav {
+    display: block;
+  }
+
+  .site-header__cta {
+    margin-inline-start: 0;
+  }
+
+  .site-header__toggle {
+    display: none;
+  }
+}
+
+.site-header__progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0 var(--gutter) 32px;
+  border: 0;
+  background: var(--charcoal);
+  color: var(--white);
+}
+
+.mobile-menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  margin-bottom: 16px;
+}
+
+.mobile-menu li {
+  border-bottom: 1px solid var(--line-on-dark);
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 14px 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 5.5vw, 1.7rem);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Quote dialog */
+.quote {
+  width: min(640px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: clamp(20px, 4vw, 36px);
+  border: 0;
+  border-top: 6px solid var(--orange);
+  background: var(--white);
+  color: var(--charcoal);
+}
+
+.quote::backdrop {
+  background: rgb(31 35 38 / 76%);
+}
+
+.quote__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quote__head h2 {
+  font-size: 1.6rem;
+}
+
+.quote__intro {
+  margin-bottom: 20px;
+}
+
+.quote__form {
+  display: grid;
+  gap: 14px 18px;
+}
+
+@media (min-width: 560px) {
+  .quote__form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quote__wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.quote label {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.quote small {
+  color: var(--stone);
+  font-weight: 400;
+}
+
+.quote input,
+.quote select,
+.quote textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--stone);
+  border-radius: 0;
+  background: var(--white);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.quote__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quote__actions .button {
+  flex: 1 1 220px;
+}
+
+.quote__honesty {
+  font-size: 0.9rem;
+  color: var(--stone-text);
+}
+
+/* Floating WhatsApp */
+.floating-whatsapp {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  background: var(--orange);
+  color: var(--charcoal);
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+}
+
+.floating-whatsapp.is-hidden,
+html[data-intro] .floating-whatsapp {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(12px);
+}
