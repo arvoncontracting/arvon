@@ -105,4 +105,6 @@ all 16 assets referenced by the page return 200; HTTPS with HTTP redirect.
 is the price of keeping it. Actions logs warn that some actions target Node 20; not failing today.
 
 **Deployment history:** three runs stopped at the test gate before reaching production (anchor race, then two WebKit
-items). The run for the final commit is recorded in the release notes for this version on GitHub Actions.
+items). Run 41205720906 on commit 48d4859 passed 173 tests with 4 skipped across all three browsers, and deployed.
+Against the live URL: 116 passed, 2 skipped in Chromium and Firefox on the release before the founders-heading fix,
+then 59 passed in Chromium after it. Lighthouse figures come from the release just before that one-word fix.
