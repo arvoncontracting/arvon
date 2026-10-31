@@ -79,6 +79,19 @@ test('hot asphalt carries no grade, origin or supplier anywhere', async ({ page,
   await expect(page.locator('body')).not.toContainText('تنويه فني');
 });
 
+test('membrane standards row is exact, qualified and makes no certification claim', async ({ page }) => {
+  await open(page);
+  const row = page.locator('#service-membranes .spec-list > div').last();
+  await expect(row.locator('dt')).toHaveText('المواصفات ومعايير الجودة');
+  await expect(row.locator('dd')).toHaveText(
+    'تُختار رولات البيتومين وفق متطلبات المشروع والمواصفات الفنية للمنتج، مع الرجوع إلى المعايير الأمريكية (ASTM) والأوروبية (EN)، وشهادات أنظمة الجودة (ISO) الخاصة بالشركة المصنّعة عند توفرها والتحقق منها.',
+  );
+  expect(await row.locator('dd [lang="en"]').allInnerTexts()).toEqual(['ASTM', 'EN', 'ISO']);
+  const membranes = await page.locator('#service-membranes').innerText();
+  for (const term of ['APP', 'SBS', 'بوليستر', '1 م × 10 م', 'من منتج إلى آخر']) expect(membranes, term).toContain(term);
+  expect(await page.locator('body').innerText()).not.toMatch(/حاصلة على|معتمدة من|مطابقة لل/);
+});
+
 test('first content section uses the new message', async ({ page }) => {
   await open(page);
   await expect(page.locator('#identity h2')).toHaveText('نُتقن العزل.ونُنجز أعمال الطرق.');
@@ -87,9 +100,11 @@ test('first content section uses the new message', async ({ page }) => {
 
 test('source contains no unverified claims or placeholders', async ({ page }) => {
   await open(page);
-  const text = (await page.locator('body').innerText()) + readFileSync('index.html', 'utf8');
+  // ISO, ASTM and EN are allowed only in the qualified membrane row, tested separately below.
+  const standardsRow = await page.locator('#service-membranes .spec-list > div').last().innerText();
+  const text = (await page.locator('body').innerText()).replace(standardsRow, '') + readFileSync('index.html', 'utf8');
   const forbidden = [
-    /lorem/i, /todo/i, /ipsum/i, /ISO\s?\d*/, /\bCE\b/, /أيزو/, /الأكبر/, /الأول في/, /رقم 1/,
+    /lorem/i, /todo/i, /ipsum/i, /ISO\s?\d*/, /ASTM/, /\bEN\b/, /\bCE\b/, /أيزو/, /الأكبر/, /الأول في/, /رقم 1/,
     /testimonial/i, /شهادة عميل/, /سنوات خبرة/, /\+\d+ مشروع/, /سنة كفالة/, /\d+\s*سنوات/, /مسجل/, /opening ?hours/i, /aggregateRating/,
   ];
   for (const pattern of forbidden) expect(text, String(pattern)).not.toMatch(pattern);
