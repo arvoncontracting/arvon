@@ -1,127 +1,108 @@
 # ARVON website — QA report
 
-Tested on a local production build, 2026-10-31, Linux (Kali), Node 24, Playwright 1.64.
-Only checks that actually ran are reported. Live results are in Round 5.
+Release of 2026-10-31. Only checks that actually ran are reported.
+Environment: Kali Linux, Node 24, Playwright 1.64 (Chromium, Firefox locally; Chromium, Firefox, WebKit in GitHub Actions on Ubuntu), Lighthouse default profiles.
 
-## Round 1 — Brand integrity
+## Round 1 — Content, Arabic and material claims
 
-**Tests:** read all 14 PDF pages and viewed the rendered pages and embedded images. Automated: palette tokens are
-exact, logo renders at 140px or wider at 320px viewport, rendered ratio matches source. Manual comparison of the
-traced logo against the board at 8x.
+**Tests:** repository-wide search for grades, origin and supplier terms, every hit inspected. Automated checks on the
+built HTML and sources: exact service titles and numbering 01–09, founders, experience order, no note blocks, membrane
+qualifiers, no ISO or CE claims, no statistics or ratings. Full manual rewrite pass of `src/content/ar.ts`.
 
-**Problems found and fixed:**
-- No vector logo exists; only a raster board. Traced by colour separation, no redraw.
-- First Arabic trace dropped dots in «للمقاولات الإنشائية». Retraced from the larger typography panel; dots preserved.
-- Board lockups draw the symbol at a different proportion from the master (1.65 vs 1.83). Standalone symbol traced
-  separately rather than stretching the master.
-- Photo 4 has black letterbox bars. Cropped in the web copy; original untouched.
-
-**Retest:** pass. Exact colours, approved variants, `dark-bg` follows the orange-plus-white office sign on the board.
-
-**Remaining limitations:** logo is a trace from a raster source, fine on screen, not for print (the PDF itself says
-so). Vector master needed. Neutrals outside the palette: paper `#F6F4EF` (from the board's background),
-`#54585B` (Stone darkened for small text), `#D4D6D7` (secondary text on dark).
-
-## Round 2 — Visual and cinematic
-
-**Tests:** real screenshots captured and reviewed by eye: intro in 9 timed frames at 1440 and 390; full scroll at
-320, 390, 768, 1024, 1440, 1920. Automated reverse-scroll test.
-
-**Problems found and fixed:**
-- Asphalt title covered the roller's cab. Title narrowed and resized.
-- Orange scene line crossed body text on phones, and pillar text on desktop. Hidden on narrow, shortened on wide.
-- Hero headline ran past the dark gradient at 1024. Column narrowed, gradient extended.
-- Dead space after the asphalt and concrete scenes. Padding reduced.
-- Service index titles wrapped needlessly: a flex rule was hitting the number span. Selector fixed.
-- Warranty pattern showed a visible seam. Replaced with continuous diagonals.
-- Floating WhatsApp overlapped the third hero pillar on phones. Now hidden on the hero and contact sections.
-- Stray fragment in the intro before the wordmark reveal. Fixed.
-
-**Retest:** pass. Pinning is limited to one scene (asphalt, desktop only); phones have no pinning. Reverse scroll
-restores every section.
-
-**Remaining limitations:** frame-rate was judged from stills and headless runs, not on a physical phone. Photos
-top out at about 1600px, so they soften slightly on 1920px and larger screens; nothing was upscaled.
-
-## Round 3 — Responsive and cross-browser
-
-**Tests:** Playwright at 320, 375, 390, 430, 768, 1024, 1440, 1920, stepping the whole page down and up and asserting
-no horizontal overflow at each stop. Touch targets, RTL, mobile menu, floating button, reduced motion.
-
-**Problems found and fixed:**
-- Overflow at 320–430: the email address forced grid tracks wider than the viewport in contact and footer. Tracks
-  now `minmax(0, 1fr)`, contact rows stack on phones.
-- Overflow at 320: tilted warranty sheet. Section clipped horizontally.
-- Footer and back-to-top links under 44px. Raised.
-
-**Retest:** Chromium and Firefox pass at all widths.
-
-**WebKit:** could not launch on the Kali machine (missing `libicu74`, `libjpeg-turbo8`), so it runs in GitHub Actions
-on Ubuntu before every deploy. It passed the full suite there.
-
-**Remaining limitations:** no real iOS or Android device was tested; WebKit coverage is Playwright's build, not Safari.
-
-## Round 4 — Functional and content
-
-**Tests (automated):** every in-page link resolves, header navigation arrives; exact phone, WhatsApp, email, Facebook,
-Instagram links; decoded `mailto:` subject and body; quote dialog with required fields, service preselection, real
-WhatsApp popup URL and no fake success; intro timing, skip, no replay, deep-link bypass; mobile menu focus and Escape;
-skip link and focus outline; all seven photos load in the right sections, with alt text; nine service titles;
-founders; experience order; technical wording; warranty labelling with no digits; search for placeholders, ISO/CE,
-superlatives, invented statistics, testimonials, ratings. JavaScript-off rendering via prerendered HTML.
-External links fetched: wa.me, Facebook, Instagram all returned HTTP 200.
-
-**Problems found and fixed:** two test-side errors (wrong row selector, tilt measured as distortion), corrected.
-No content defects were found.
+**Found and fixed:**
+- Hot asphalt grades, origin and refinery text in the service, plus a refinery reference in the asphalt note. Removed.
+- All "تنويه فني" blocks removed. Accuracy kept in the prose: slope is separate from waterproofing, trowel finishing
+  follows casting, not every roof system suits underground work.
+- Titles corrected: «عزل Underfloor», «عزل الأساسات». Latin runs isolated with a `Bidi` component.
+- Phrasing tightened across the site. A rewrite changed the founders heading to the dual form; the owner specified
+  «المؤسسون», so it was restored. «السيد صهيب القيسي» and «9 خدمات متخصصة» applied as instructed.
 
 **Retest:** pass.
 
-**Remaining limitations:** the supplied membrane photo shows no manufacturer marking. Photo 6 shows a small
-"Dynamic" equipment label on the trowel guard; kept, since the brief says to preserve the scene. Whether photos 2–7
-are real ARVON site photographs is unverified, so they illustrate services and are never captioned as completed
-projects. Arabic copy should get a final read by the owner. Mail and WhatsApp hand-off was verified by URL; no
-message was actually sent.
+**Limitations:** the Arabic was reviewed by the implementer, not a native proofreader. European standards were not
+mentioned because no product documents were supplied.
 
-## Round 5 — Production and deployment
+## Round 2 — Brand and visual polish
 
-**Local results:**
-- `tsc --noEmit`: pass.
-- `npm run build`: pass, prerendered. `dist` 5.6 MB. JS 146 kB gzip, CSS 7 kB gzip.
-- Playwright: **74 passed, 2 skipped** (axe sweep runs once, in Chromium) across Chromium and Firefox.
-- `npm audit`: 0 vulnerabilities.
-- axe (WCAG A/AA, best-practice): 0 violations at 1440 and 390, after fixing the items below.
-- Lighthouse on a local gzip server, before deployment:
+**Tests:** screenshots reviewed by eye: intro in 9 timed frames at 1440 and 390; full scroll at 390 and 1440; hero,
+first section and timeline at 320, 768, 1024, 1920. Automated header logo size, position and proportion checks.
 
-| | Performance | Accessibility | Best practices | SEO | LCP | CLS | TBT |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Mobile | 79 | 100 | 100 | 100 | 4.7 s | 0.002 | 100 ms |
-| Desktop | 97 | 100 | 100 | 100 | 0.9 s | 0 | 0 ms |
+**Found and fixed:**
+- Stacked English master needs a bar over 100 px tall at the 140 px minimum. Header uses the horizontal English
+  arrangement from board lockup 06: 200 px on phones, 240 px on desktop.
+- Logo collided with hero text at the end of the intro. Text now arrives as the logo leaves.
+- Section wedge clipped the first hero pillar. Direction flipped.
+- Hot-asphalt worker cropped in the stage. Focus moved.
+- Stray "|" at a line end in the Quality heading. Latin title now stacks.
+- Hero logo removed: with the English header logo it duplicated the mark on one screen.
 
-**Problems found and fixed:** charcoal on brand orange is 4.39:1, under AA for normal text, so primary buttons
-became 19px bold and section tabs became an orange marker beside text. WhatsApp button placed in a landmark.
+**Retest:** pass.
 
-**Remaining limitations:** the 3-second intro covers the hero on first visits, a deliberate trade-off; later visits
-in the same session skip it.
+**Limitations:** the logo remains a trace from the PDF's raster board. Fine on screen; print needs the vector master.
+The board draws the symbol at slightly different proportions between lockups; neither was stretched.
 
-**Deployment, by the `arvoncontracting` account:**
-- Repository was empty, so nothing was overwritten. Normal push, no force. Pages source set to GitHub Actions.
-- First run stopped at the test gate: 108 passed, 2 failed in Firefox and WebKit. The intro took 5.4 s on a loaded
-  runner because GSAP lag smoothing stretched it. Fixed: the intro now keeps wall-clock time and the failsafe is 4 s.
-  The test timer also moved to start when the intro appears; the 4.5 s limit was kept. Nothing deployed from that run.
-- Second run: 110 passed, 4 skipped across Chromium, Firefox and WebKit, then deployed.
+## Round 3 — Responsive and motion
 
-**Live checks on https://arvoncontracting.github.io/arvon/:**
-- HTML 200 over HTTP/2 with HSTS; HTTP redirects 301 to HTTPS.
-- All 12 assets referenced by the HTML return 200. robots, sitemap, favicon, social image, logo and photos return 200.
-- Playwright against the live URL: 74 passed, 2 skipped, Chromium and Firefox. This covers images, deep links, reload,
-  console errors, overflow at all widths, and axe with 0 violations.
-- The private brand PDF is not in the repository or the site.
+**Tests:** whole page stepped down and up at 320, 375, 390, 430, 768, 1024, 1440, 1920 with no-overflow assertions.
+Timeline: 5 stages visible at 320, 390, 768, 1440; active stage checked at each stage, both directions, at 390 and 1440.
+Reduced motion, no pinning, touch targets, RTL, mobile menu, floating button.
 
-| Live Lighthouse | Performance | Accessibility | Best practices | SEO | LCP | CLS | TBT |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Mobile | 69 | 100 | 100 | 100 | 3.6 s | 0 | 580 ms |
-| Desktop | 97 | 100 | 100 | 100 | 0.6 s | 0 | 10 ms |
+**Found and fixed:**
+- Floating WhatsApp sat over line ends while reading on phones. It now appears only on scroll-up.
+- The pinned road scene was replaced by a sticky fact column and a vertical timeline, so nothing traps scrolling.
+- WebKit, CI only: fixed-delay timeline test read state too early under load. It now waits for the expected stage.
+  It would still fail if a stage were really skipped.
 
-**Live remaining limitations:** mobile performance is 69 on one run under simulated throttling, below the local 79.
-The script bundle (146 kB gzip) and the intro are the main costs. Actions logs warn that some actions target Node 20;
-this does not fail the build today, but the action versions should be raised eventually.
+**Retest:** all three browsers pass.
+
+**Limitations:** WebKit runs only in CI (the Kali machine lacks its libraries) and is Playwright's build, not Safari.
+No physical iPhone or Android test.
+
+## Round 4 — Functionality and assets
+
+**Tests:** all ten images mapped and loaded, with alt text; desktop stage shows each of the five waterproofing photos;
+in-page links; exact phone, WhatsApp, email and social links; decoded `mailto:`; quote dialog with no false success;
+skip button; intro with the JS bundle blocked; JavaScript-off rendering; console errors.
+
+**Found and fixed:**
+- **Real bug, found in three forms:** ScrollTrigger's start-up measuring cancelled an anchor jump in progress, from
+  header links, the mobile menu (first seen as a CI failure) and deep links (WebKit). Motion now waits for scrolling
+  to settle, and a cancelled jump is resumed. Added a test at five tap timings; 64 repeated runs passed.
+
+**Retest:** pass. External links returned 200 in the previous release and were not changed.
+
+**Limitations:** images 2–10 are not verified as real ARVON sites, so they illustrate services and are never captioned
+as projects. Image 6 shows a small "Dynamic" equipment label. Image 9's rolls carry illegible blue marks, with no
+readable brand. No message was actually sent through WhatsApp or email.
+
+## Round 5 — Performance, accessibility and production
+
+**Bottlenecks found (baseline):** 426 kB of JS hydrating a static page (TBT 628 ms), intro holding the hero behind JS,
+166 kB HTML with logo paths repeated, render-blocking stylesheet, phones fetching the wide hero.
+
+**Changes:**
+- React now renders at build time only. Browser entry is 5 kB, plus GSAP 45 kB gzip loaded on first scroll or after
+  3.5 s. Justified by the page being static; markup stays in React components.
+- CSS intro, about 2 s, over the already painted hero. Needs no bundle.
+- One logo sprite; CSS inlined; two critical fonts preloaded, two weights dropped; 660 px portrait hero for phones.
+- Mobile scrubbed effects removed; desktop keeps them.
+
+**Live Lighthouse** on https://arvoncontracting.github.io/arvon/, default profiles, median of runs:
+
+| | Runs | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Speed Index |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Mobile before | 3 | 68 (65, 68, 77) | 100 | 100 | 100 | 2.3 s | 3.7 s | 628 ms | 0.002 | 5.2 s |
+| Mobile after | 5 | **95** (95, 95, 95, 93, 96) | 100 | 100 | 100 | 1.4 s | 2.3 s | 105 ms | 0 | 4.6 s |
+| Desktop before | 3 | 97 | 100 | 100 | 100 | 0.4 s | 0.6 s | 7 ms | 0 | 1.8 s |
+| Desktop after | 5 | **99** | 100 | 100 | 100 | 0.4 s | 0.5 s | 0 ms | 0.002 | 1.4 s |
+
+INP was not measured: Lighthouse does not report it in this mode, and there is no field data.
+
+**Production checks:** `tsc` pass; build pass; `npm audit` 0 vulnerabilities; axe 0 violations at 1440 and 390;
+all 16 assets referenced by the page return 200; HTTPS with HTTP redirect.
+
+**Remaining:** mobile Speed Index stays at 4.6 s because the intro covers the first screen for about two seconds. That
+is the price of keeping it. Actions logs warn that some actions target Node 20; not failing today.
+
+**Deployment history:** three runs stopped at the test gate before reaching production (anchor race, then two WebKit
+items). The run for the final commit is recorded in the release notes for this version on GitHub Actions.
