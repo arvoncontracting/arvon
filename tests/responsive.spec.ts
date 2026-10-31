@@ -112,24 +112,19 @@ for (const width of [390, 1440]) {
         const top = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.62 + 12;
         window.scrollTo({ top, behavior: 'instant' });
       });
-      await page.waitForTimeout(200);
     };
 
-    const seen: number[] = [];
     for (let i = 0; i < 5; i += 1) {
       await placeAtLine(i);
-      seen.push(await activeIndex());
+      await expect.poll(activeIndex).toBe(i);
       expect(await page.locator('.timeline__stage[aria-current="step"]').count()).toBe(1);
     }
-    expect(seen).toEqual([0, 1, 2, 3, 4]);
     await expect(stages.nth(0)).toHaveClass(/is-done/);
 
-    const reverse: number[] = [];
     for (let i = 4; i >= 0; i -= 1) {
       await placeAtLine(i);
-      reverse.push(await activeIndex());
+      await expect.poll(activeIndex).toBe(i);
     }
-    expect(reverse).toEqual([4, 3, 2, 1, 0]);
   });
 }
 

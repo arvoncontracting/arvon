@@ -25,14 +25,22 @@ function whenScrollSettles(run: () => void) {
 
 if (motionAllowed) {
   // A jump that starts just as ScrollTrigger measures gets cancelled, so it is resumed afterwards.
-  let lastJump: { target: Element; at: number } | undefined;
+  // That covers links and arriving on a #hash, unless the visitor has since taken over scrolling.
+  let jumpTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
+  let jumpAt = performance.now();
   document.addEventListener('click', (event) => {
     const hash = (event.target as Element).closest('a[href^="#"]')?.getAttribute('href');
     const target = hash && hash.length > 1 ? document.querySelector(hash) : null;
-    if (target) lastJump = { target, at: performance.now() };
+    if (target) {
+      jumpTarget = target;
+      jumpAt = performance.now();
+    }
   });
+  (['wheel', 'touchmove'] as const).forEach((name) =>
+    window.addEventListener(name, () => (jumpTarget = null), { passive: true }),
+  );
   const resumeJump = () => {
-    if (lastJump && performance.now() - lastJump.at < 2500) lastJump.target.scrollIntoView();
+    if (jumpTarget && performance.now() - jumpAt < 5000) jumpTarget.scrollIntoView();
   };
 
   // Scroll choreography waits for the first scroll, or for a quiet moment after load.
