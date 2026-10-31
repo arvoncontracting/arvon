@@ -16,20 +16,21 @@ test('company facts are exact', async ({ page }) => {
     'ARVON WRITTEN WARRANTY',
     'استكشف خدماتنا',
     'تواصل عبر واتساب',
+    'نُتقن العزل.',
   ]) {
     expect(body, fact).toContain(fact);
   }
 });
 
-test('all nine services are present with their exact titles', async ({ page }) => {
+test('all nine services are present, numbered in the required order', async ({ page }) => {
   await open(page);
-  const titles = await page.locator('[id^="service-"] h3, #asphalt h2').allInnerTexts();
-  for (const title of [
-    'العزل بالزفتة الساخنة', 'العزل برولات البيتومين', 'الخلطات الأسفلتية وتعبيد الطرق', 'عزل أساسات المباني',
-    'العزل الحراري', 'عزل ما تحت الأرضيات', 'عزل البولي يوريثان', 'صبة الميلان', 'صبة المروحية',
-  ]) {
-    expect(titles, title).toContain(title);
-  }
+  expect(await page.locator('.showcase__title').allInnerTexts()).toEqual([
+    'العزل بالزفتة الساخنة', 'العزل برولات البيتومين', 'عزل الأساسات', 'العزل الحراري', 'عزل Underfloor',
+    'صبة الميلان', 'صبة المروحية', 'الخلطات الأسفلتية وتعبيد الطرق', 'عزل البولي يوريثان',
+  ]);
+  await expect(page.locator('#service-underfloor h3')).toHaveText('عزل Underfloor');
+  await expect(page.locator('#service-polyurethane h3')).toHaveText('عزل البولي يوريثان');
+  await expect(page.locator('#service-underfloor h3 [lang="en"]')).toHaveText('Underfloor');
 });
 
 test('experience stays in the required order', async ({ page }) => {
@@ -39,24 +40,56 @@ test('experience stays in the required order', async ({ page }) => {
   ]);
 });
 
-test('technical wording matches the brief', async ({ page }) => {
+test('asphalt timeline wording is exact and qualified', async ({ page }) => {
   await open(page);
-  const hot = await page.locator('#service-hot-asphalt').innerText();
-  expect(hot).toContain('80/100');
-  expect(hot).toContain('60/70');
-  expect(hot).toContain('لا يُنشئ ميلان');
+  expect(await page.locator('.timeline__stage h4').allInnerTexts()).toEqual([
+    'تقييم الموقع وتجهيز السطح', 'تنفيذ طبقة Base Course', 'رش مادة MC', 'فرد الخلطة الأسفلتية', 'الدمك والتشطيب النهائي',
+  ]);
+  const text = await page.locator('.asphalt__process').innerText();
+  expect(text).toContain('عند الحاجة');
+  expect(text).toContain('عندما يتطلب نظام الرصف ذلك');
+  expect(text).toContain('MC (Prime Coat)');
+  expect(text).toContain('توضيحية');
+  await expect(page.locator('.timeline [lang="en"]', { hasText: 'Base Course' }).first()).toBeAttached();
+  await expect(page.locator('.timeline__stage h4 [lang="en"]', { hasText: /^MC$/ })).toBeAttached();
+  const uses = await page.locator('.asphalt__uses li').allInnerTexts();
+  expect(uses).toEqual(['الطرق الداخلية', 'الطرق', 'الساحات', 'مواقف السيارات']);
+});
+
+test('membrane details are qualified, foundation and trowel stay accurate', async ({ page }) => {
+  await open(page);
   const membranes = await page.locator('#service-membranes').innerText();
-  for (const term of ['APP', 'SBS', '3 مم', '4 مم', '5 مم', 'ولا ينطبق تلقائيًا']) expect(membranes, term).toContain(term);
-  expect(await page.locator('#service-foundation').innerText()).toContain('ليس كل نظام مناسب للأسطح');
-  expect(await page.locator('#service-power-trowel').innerText()).toContain('لا عملية صب');
-  expect(await page.locator('#service-asphalt-paving').innerText()).toContain('البيتومين مع الركام');
+  for (const term of ['APP', 'SBS', '3 مم', '4 مم', '5 مم', '1 م × 10 م', 'حيثما ينطبق', 'من منتج إلى آخر']) expect(membranes, term).toContain(term);
+  expect(await page.locator('#service-foundation').innerText()).toContain('لا يصلح كل نظام');
+  expect(await page.locator('#service-power-trowel').innerText()).toContain('تلي صب الخرسانة');
+  expect(await page.locator('#service-slope-screed').innerText()).toContain('يسبق العزل');
+});
+
+test('hot asphalt carries no grade, origin or supplier anywhere', async ({ page, request, baseURL }) => {
+  await open(page);
+  await expect(page.locator('#service-hot-asphalt h3')).toHaveText('العزل بالزفتة الساخنة');
+  const html = await (await request.get(baseURL!)).text();
+  const sources = [html, readFileSync('src/content/ar.ts', 'utf8'), readFileSync('index.html', 'utf8')];
+  for (const source of sources) {
+    for (const pattern of [/80\/100/, /60\/70/, /مصفاة/, /Refinery/i, /عراقي/, /Iraq/i, /بيتومين أردني/, /غرز/, /penetration/i, /softening/i, /تليين/]) {
+      expect(source, String(pattern)).not.toMatch(pattern);
+    }
+  }
+  await expect(page.locator('.service__note')).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('تنويه فني');
+});
+
+test('first content section uses the new message', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('#identity h2')).toHaveText('نُتقن العزل.ونُنجز أعمال الطرق.');
+  await expect(page.locator('body')).not.toContainText('طبقات لها وظيفة');
 });
 
 test('source contains no unverified claims or placeholders', async ({ page }) => {
   await open(page);
   const text = (await page.locator('body').innerText()) + readFileSync('index.html', 'utf8');
   const forbidden = [
-    /lorem/i, /todo/i, /placeholder/i, /ipsum/i, /ISO\s?\d*/, /\bCE\b/, /أيزو/, /الأكبر/, /الأول في/, /رقم 1/,
+    /lorem/i, /todo/i, /ipsum/i, /ISO\s?\d*/, /\bCE\b/, /أيزو/, /الأكبر/, /الأول في/, /رقم 1/,
     /testimonial/i, /شهادة عميل/, /سنوات خبرة/, /\+\d+ مشروع/, /سنة كفالة/, /\d+\s*سنوات/, /مسجل/, /opening ?hours/i, /aggregateRating/,
   ];
   for (const pattern of forbidden) expect(text, String(pattern)).not.toMatch(pattern);
@@ -86,6 +119,7 @@ test('prerendered HTML carries the content before scripts run', async ({ request
   const html = await (await request.get(baseURL!)).text();
   expect(html).toContain('حلول متخصصة في العزل المائي');
   expect(html).toContain('مجمع الملك الحسين للأعمال');
+  expect(html).not.toContain('<link rel="stylesheet"');
 });
 
 test('site works with JavaScript disabled', async ({ browser }) => {
@@ -97,22 +131,26 @@ test('site works with JavaScript disabled', async ({ browser }) => {
   await context.close();
 });
 
-test('logo keeps its minimum width and true proportions', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 568 });
-  await open(page);
-  const logos = await page.evaluate(() =>
-    [...document.querySelectorAll<SVGSVGElement>('.site-header__logo svg, .hero__logo, .certificate__logo, .site-footer__logo')].map((svg) => {
-      const style = getComputedStyle(svg);
-      const [boxWidth, boxHeight] = [parseFloat(style.width), parseFloat(style.height)];
-      const { width, height } = svg.viewBox.baseVal;
-      return { width: boxWidth, ratio: boxWidth / boxHeight, source: width / height };
-    }),
-  );
-  expect(logos.length).toBeGreaterThanOrEqual(4);
-  for (const logo of logos) {
+test('header shows the English logo at a legal size, fully inside the bar', async ({ page }) => {
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 700 });
+    await open(page);
+    const logo = await page.evaluate(() => {
+      const svg = document.querySelector<SVGSVGElement>('.site-header__logo svg')!;
+      const box = svg.getBoundingClientRect();
+      const bar = document.querySelector('.site-header')!.getBoundingClientRect();
+      const refs = [...svg.querySelectorAll('use')].map((use) => use.getAttribute('href'));
+      return { width: box.width, top: box.top - bar.top, bottom: bar.bottom - box.bottom, ratio: box.width / box.height, source: svg.viewBox.baseVal.width / svg.viewBox.baseVal.height, refs, left: box.left, right: box.right };
+    });
     expect(logo.width).toBeGreaterThanOrEqual(140);
-    expect(Math.abs(logo.ratio - logo.source)).toBeLessThan(0.03);
+    expect(logo.top).toBeGreaterThan(0);
+    expect(logo.bottom).toBeGreaterThan(0);
+    expect(logo.left).toBeGreaterThanOrEqual(0);
+    expect(logo.right).toBeLessThanOrEqual(width);
+    expect(Math.abs(logo.ratio - logo.source)).toBeLessThan(0.05);
+    expect(logo.refs).toContain('#lg-word');
   }
+  await expect(page.locator('#lg-word')).toBeAttached();
 });
 
 test('stylesheet defines the exact brand palette', async ({ page }) => {

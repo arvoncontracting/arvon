@@ -1,19 +1,14 @@
-import { useRef } from 'react';
 import { content } from '../content';
 import { Icon } from '../components/Icon';
 import { QuoteLink } from '../components/QuoteLink';
 import { SectionHeading } from '../components/SectionHeading';
-import { useReveal } from '../hooks/useReveal';
 import { mailtoUrl } from '../utils/links';
 
 const { partners } = content;
 
 export function B2BPartnership() {
-  const ref = useRef<HTMLElement>(null);
-  useReveal(ref);
-
   return (
-    <section ref={ref} id="partners" className="partners" aria-labelledby="partners-title">
+    <section id="partners" className="partners" aria-labelledby="partners-title">
       <div className="partners__stripe" aria-hidden="true" />
       <div className="wrap">
         <SectionHeading id="partners-title" eyebrow={partners.eyebrow} title={partners.title} body={partners.body} />

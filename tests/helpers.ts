@@ -10,7 +10,14 @@ export async function skipIntro(page: Page) {
 export async function open(page: Page) {
   await skipIntro(page);
   await page.goto('./', { waitUntil: 'load' });
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(300);
+}
+
+/** Forces the lazily loaded scroll choreography to start. */
+export async function startMotion(page: Page) {
+  await page.evaluate(() => window.scrollBy({ top: 1, behavior: 'instant' }));
+  await page.waitForFunction(() => document.documentElement.hasAttribute('data-motion'));
+  await page.waitForTimeout(200);
 }
 
 export const heightFor = (width: number) => (width < 768 ? 780 : width < 1200 ? 900 : 1000);

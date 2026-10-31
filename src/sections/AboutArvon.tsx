@@ -1,17 +1,12 @@
-import { useRef } from 'react';
 import { content } from '../content';
 import { SectionHeading } from '../components/SectionHeading';
 import { SectionTransition } from '../components/SectionTransition';
-import { useReveal } from '../hooks/useReveal';
 
 const { about } = content;
 
 export function AboutArvon() {
-  const ref = useRef<HTMLElement>(null);
-  useReveal(ref);
-
   return (
-    <section ref={ref} id="about" className="about" aria-labelledby="about-title">
+    <section id="about" className="about" aria-labelledby="about-title">
       <div className="wrap about__grid">
         <div className="about__main">
           <SectionHeading id="about-title" eyebrow={about.eyebrow} title={about.title} />

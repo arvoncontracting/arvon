@@ -1,6 +1,6 @@
 import type { ImageId } from '../data/images';
 
-export type ServiceGroup = 'waterproofing' | 'asphalt' | 'concrete';
+export type ServiceGroup = 'waterproofing' | 'concrete' | 'asphalt' | 'polyurethane';
 
 export type ServiceId =
   | 'hot-asphalt'
@@ -8,10 +8,10 @@ export type ServiceId =
   | 'foundation'
   | 'thermal'
   | 'underfloor'
-  | 'polyurethane'
-  | 'asphalt-paving'
   | 'slope-screed'
-  | 'power-trowel';
+  | 'power-trowel'
+  | 'asphalt-paving'
+  | 'polyurethane';
 
 export interface ServiceSpec {
   label: string;
@@ -27,9 +27,7 @@ export interface Service {
   scopeTitle: string;
   scope: string[];
   specs?: ServiceSpec[];
-  note?: string;
-  /** Services without a real photograph use a typographic plate; imagery is never substituted. */
-  image?: { id: ImageId; alt: string };
+  image: { id: ImageId; alt: string };
 }
 
 export interface ExperienceRecord {
@@ -48,7 +46,6 @@ export interface NavItem {
 export interface SiteContent {
   company: { name: string; nameLatin: string; descriptor: string; coverage: string };
   nav: { items: NavItem[]; contactCta: string; menuOpen: string; menuClose: string; menuTitle: string; skipToContent: string; home: string };
-  intro: { welcome: string; skip: string };
   hero: {
     brand: string;
     descriptor: string;
@@ -59,15 +56,13 @@ export interface SiteContent {
     pillars: { label: string; href: string }[];
     imageAlt: string;
   };
-  identity: { eyebrow: string; title: string[]; body: string; pillars: { title: string; body: string }[] };
+  identity: { eyebrow: string; title: string[]; body: string; pillarsLabel: string; pillars: { title: string; body: string }[] };
   services: {
     eyebrow: string;
     title: string;
     body: string;
-    groups: Record<ServiceGroup, string>;
     items: Service[];
     quoteCta: string;
-    noteLabel: string;
   };
   waterproofing: { eyebrow: string; title: string; body: string };
   asphalt: {
@@ -75,6 +70,7 @@ export interface SiteContent {
     usesTitle: string;
     uses: string[];
     stepsTitle: string;
+    stepsNote: string;
     steps: { title: string; body: string }[];
   };
   concrete: { eyebrow: string; title: string; body: string };

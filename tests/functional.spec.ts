@@ -1,30 +1,43 @@
 import { expect, test } from '@playwright/test';
-import { open, scrollThrough } from './helpers';
+import { open, scrollThrough, startMotion } from './helpers';
 
 test.describe('intro', () => {
-  test('plays once, about three seconds, then does not replay', async ({ page }) => {
+  test('plays once, about two seconds, then does not replay', async ({ page }) => {
     await page.goto('./', { waitUntil: 'commit' });
     await expect(page.locator('.intro')).toBeVisible();
     const started = Date.now();
     await expect(page.getByText('أهلًا وسهلًا بكم', { exact: true })).toBeVisible();
-    await expect(page.locator('.intro')).toHaveCount(0, { timeout: 6000 });
-    expect(Date.now() - started).toBeLessThan(4500);
+    await expect(page.locator('.intro')).toBeHidden({ timeout: 4000 });
+    expect(Date.now() - started).toBeLessThan(3000);
     await expect(page.locator('h1')).toBeVisible();
     await page.reload();
-    await page.waitForTimeout(400);
-    await expect(page.locator('.intro')).toHaveCount(0);
+    await page.waitForTimeout(300);
+    await expect(page.locator('.intro')).toBeHidden();
   });
 
   test('skip button ends it at once', async ({ page }) => {
     await page.goto('./');
     await page.getByRole('button', { name: 'تخطي المقدمة' }).click();
-    await expect(page.locator('.intro')).toHaveCount(0);
-    await expect(page.locator('h1')).toHaveCSS('opacity', '1', { timeout: 1500 });
+    await expect(page.locator('.intro')).toBeHidden();
+    await expect(page.locator('h1')).toHaveCSS('opacity', '1', { timeout: 1000 });
+  });
+
+  test('runs and ends without any JavaScript bundle', async ({ page }) => {
+    await page.route('**/assets/*.js', (route) => route.abort());
+    await page.goto('./', { waitUntil: 'commit' });
+    await expect(page.locator('.intro')).toBeHidden({ timeout: 4000 });
+    await expect(page.locator('h1')).toBeVisible();
+  });
+
+  test('hero is painted underneath from the start', async ({ page }) => {
+    await page.goto('./', { waitUntil: 'commit' });
+    await page.waitForSelector('.hero img', { state: 'attached' });
+    await expect(page.locator('.hero img')).toHaveCSS('opacity', '1');
   });
 
   test('deep links bypass it', async ({ page }) => {
     await page.goto('./#contact');
-    await expect(page.locator('.intro')).toHaveCount(0);
+    await expect(page.locator('.intro')).toBeHidden();
     await expect(page.locator('#contact h2')).toBeInViewport({ timeout: 4000 });
   });
 });
@@ -77,6 +90,7 @@ test('meeting request opens the exact prefilled email', async ({ page }) => {
 test('quote dialog prepares a WhatsApp message and claims nothing', async ({ page, context }) => {
   await open(page);
   const trigger = page.locator('#partners').getByRole('link', { name: 'طلب عرض سعر' });
+  await trigger.scrollIntoViewIfNeeded();
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: 'طلب عرض سعر' });
   await expect(dialog).toBeVisible();
@@ -99,7 +113,7 @@ test('quote dialog prepares a WhatsApp message and claims nothing', async ({ pag
 
 test('service quote link preselects its service, Escape closes, focus returns', async ({ page }) => {
   await open(page);
-  const link = page.locator('#service-power-trowel').getByRole('link', { name: 'طلب عرض سعر لهذه الخدمة' });
+  const link = page.locator('#service-power-trowel').getByRole('link', { name: 'اطلب عرض سعر لهذه الخدمة' });
   await link.click();
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByLabel('الخدمة المطلوبة')).toHaveValue('power-trowel');
@@ -127,7 +141,7 @@ test('mobile menu traps focus, navigates and closes', async ({ page }) => {
 test('skip link and keyboard focus are visible', async ({ page }) => {
   await open(page);
   await page.keyboard.press('Tab');
-  const skip = page.getByRole('link', { name: 'تخطَّ إلى المحتوى' });
+  const skip = page.getByRole('link', { name: 'الانتقال إلى المحتوى' });
   await expect(skip).toBeFocused();
   await expect(skip).toBeInViewport();
   await page.keyboard.press('Tab');
@@ -135,7 +149,7 @@ test('skip link and keyboard focus are visible', async ({ page }) => {
   expect(outline).toBe('solid');
 });
 
-test('all seven photographs load in their correct sections', async ({ page }) => {
+test('all ten photographs load in their correct sections', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 780 });
   await open(page);
   await scrollThrough(page);
@@ -144,9 +158,12 @@ test('all seven photographs load in their correct sections', async ({ page }) =>
     '#service-hot-asphalt': 'hot-asphalt',
     '#service-membranes': 'bitumen-membranes',
     '#asphalt .road__photo': 'asphalt-paving',
-    '[id="concrete"] .concrete__row:nth-of-type(1)': 'slope-screed',
-    '[id="concrete"] .concrete__row:nth-of-type(2)': 'power-trowel',
-    '#service-polyurethane': 'polyurethane',
+    '#service-foundation': 'foundation',
+    '#service-thermal': 'thermal-insulation',
+    '#service-underfloor': 'underfloor',
+    '#concrete .service-row:nth-of-type(1)': 'slope-screed',
+    '#concrete .service-row:nth-of-type(2)': 'power-trowel',
+    '#polyurethane': 'polyurethane',
   };
   for (const [selector, id] of Object.entries(map)) {
     const img = page.locator(`${selector} img`).first();
@@ -160,9 +177,24 @@ test('all seven photographs load in their correct sections', async ({ page }) =>
   expect(broken).toEqual([]);
 });
 
+test('desktop stage shows every waterproofing photograph in turn', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await startMotion(page);
+  const panels = page.locator('.systems__list .service');
+  for (let i = 0; i < 5; i += 1) {
+    await panels.nth(i).evaluate((el) => {
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.45, behavior: 'instant' });
+    });
+    await expect.poll(() => page.locator('.stage__plate.is-active').count()).toBe(i + 1);
+    await expect.poll(() => page.locator('.stage__plate.is-active img').last().evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+  }
+});
+
 test('reverse scroll restores every section with nothing stranded', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page);
+  await startMotion(page);
   await scrollThrough(page);
   await scrollThrough(page, undefined, 'up');
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -185,7 +217,7 @@ test('page runs with no console errors', async ({ page }) => {
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('requestfailed', (request) => errors.push(`failed ${request.url()}`));
   await page.goto('./');
-  await page.waitForTimeout(3600);
+  await page.waitForTimeout(2400);
   await scrollThrough(page);
   expect(errors).toEqual([]);
 });

@@ -1,11 +1,5 @@
-import { StrictMode } from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { App } from './App';
 
-export function render() {
-  return renderToString(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
-}
+/** React renders the page once, at build time. No React code reaches the browser. */
+export const render = () => renderToStaticMarkup(<App />);

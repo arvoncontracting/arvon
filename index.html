@@ -32,6 +32,16 @@
       rel="preload"
       as="image"
       type="image/avif"
+      media="(max-width: 767px)"
+      imagesrcset="/arvon/images/amman-skyline-portrait-480.avif 480w, /arvon/images/amman-skyline-portrait-660.avif 660w"
+      imagesizes="(max-width: 767px) 100vw, 660px"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="(min-width: 768px)"
       imagesrcset="/arvon/images/amman-skyline-800.avif 800w, /arvon/images/amman-skyline-1200.avif 1200w, /arvon/images/amman-skyline-1564.avif 1564w"
       imagesizes="(max-aspect-ratio: 3/2) 155vh, 100vw"
       fetchpriority="high"
@@ -60,20 +70,58 @@
     </script>
 
     <script>
-      // Decides before first paint whether the intro plays, so the page never flashes.
+      // Decides before first paint whether the intro plays. No bundle is needed for it to run or be skipped.
       (function () {
+        var root = document.documentElement;
+        root.setAttribute('data-js', '');
         try {
-          document.documentElement.setAttribute('data-js', '');
           var motionOk = !matchMedia('(prefers-reduced-motion: reduce)').matches;
           if (motionOk && !location.hash && !sessionStorage.getItem('arvon-intro-seen')) {
-            document.documentElement.setAttribute('data-intro', 'pending');
+            root.setAttribute('data-intro', '');
           }
         } catch (e) {}
       })();
     </script>
   </head>
   <body>
+    <!--logo-sprite-->
+    <div id="intro" class="intro">
+      <div class="intro__scrim"></div>
+      <div class="intro__rig" aria-hidden="true">
+        <div class="intro__plane intro__plane--a"></div>
+        <div class="intro__plane intro__plane--b"></div>
+      </div>
+      <p class="intro__welcome">أهلًا وسهلًا بكم</p>
+      <div class="intro__logo" aria-hidden="true"><!--intro-logo--></div>
+      <button type="button" class="intro__skip">تخطي المقدمة</button>
+    </div>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var intro = document.getElementById('intro');
+        if (!root.hasAttribute('data-intro')) return;
+        function end() {
+          try {
+            sessionStorage.setItem('arvon-intro-seen', '1');
+          } catch (e) {}
+          root.removeAttribute('data-intro');
+          removeEventListener('wheel', end);
+          removeEventListener('touchmove', end);
+          removeEventListener('keydown', onKey);
+        }
+        function onKey(event) {
+          if (event.key !== 'Tab' && event.key !== 'Shift') end();
+        }
+        intro.querySelector('button').addEventListener('click', end);
+        intro.addEventListener('animationend', function (event) {
+          if (event.target === intro) end();
+        });
+        addEventListener('wheel', end, { passive: true });
+        addEventListener('touchmove', end, { passive: true });
+        addEventListener('keydown', onKey);
+      })();
+    </script>
     <div id="root"><!--app-html--></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

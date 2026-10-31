@@ -4,46 +4,39 @@
   background: var(--paper);
 }
 
-.showcase__groups {
+.showcase__list {
   display: grid;
-  gap: clamp(32px, 4vw, 56px);
+  border-top: 2px solid var(--charcoal);
 }
 
-.showcase__group h3 {
-  margin-bottom: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--stone-text);
+.showcase__list li {
+  border-bottom: 1px solid var(--line);
 }
 
-.showcase__group li {
-  border-top: 1px solid var(--line);
-}
-
-.showcase__group a {
+.showcase__list a {
   display: flex;
   align-items: center;
   gap: 14px;
   min-height: 64px;
   padding-block: 10px;
   font-family: var(--font-display);
-  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.3rem);
   font-weight: 700;
   line-height: 1.5;
   text-decoration: none;
-  transition: padding 0.3s var(--ease-engineered);
 }
 
-.showcase__group a > span:not(.latin) {
+.showcase__title {
   flex: 1;
 }
 
-.showcase__group a .icon {
+.showcase__list .icon {
+  flex: none;
   color: var(--orange);
   transition: transform 0.3s var(--ease-engineered);
 }
 
-.showcase__group a:hover .icon {
+.showcase__list a:hover .icon {
   transform: translateX(-6px);
 }
 
@@ -51,28 +44,23 @@
   flex: none;
   width: 2.2em;
   font-size: 0.82em;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--stone-text);
 }
 
-@media (min-width: 1024px) {
-  .showcase__groups {
+@media (min-width: 768px) {
+  .showcase__list {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, auto);
+    grid-auto-flow: column;
+    column-gap: clamp(32px, 5vw, 96px);
+  }
+}
+
+@media (min-width: 1200px) {
+  .showcase__list {
     grid-template-columns: repeat(3, 1fr);
-    gap: 40px clamp(32px, 4vw, 72px);
-  }
-
-  .showcase__group--waterproofing {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
-
-  .showcase__group--waterproofing ol {
-    columns: 2;
-    column-gap: clamp(32px, 4vw, 72px);
-  }
-
-  .showcase__group--waterproofing li {
-    break-inside: avoid;
+    grid-template-rows: repeat(3, auto);
   }
 }
 
@@ -192,73 +180,8 @@
   }
 }
 
-.service__note {
-  max-width: 62ch;
-  margin-top: 24px;
-  padding: 12px 18px;
-  border-inline-start: 4px solid var(--orange);
-  background: var(--paper);
-}
-
-.service__note strong {
-  display: block;
-  font-size: 0.92rem;
-}
-
-.service__note--dark {
-  background: rgb(255 255 255 / 7%);
-}
-
 .service .text-link {
   margin-top: 20px;
-}
-
-/* Abstract plates, deliberately label-free so they cannot read as technical sections */
-.plate {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--charcoal);
-  color: var(--white);
-}
-
-.plate__band {
-  position: absolute;
-  inset-block: -10%;
-  transform: skewX(var(--slope-skew));
-}
-
-.plate__band--1 { left: 8%; width: 30%; background: rgb(255 255 255 / 5%); }
-.plate__band--2 { left: 44%; width: 12%; background: var(--orange); }
-.plate__band--3 { left: 62%; width: 44%; background: rgb(255 255 255 / 8%); }
-
-.plate--thermal { background: var(--sand); color: var(--charcoal); }
-.plate--thermal .plate__band--1,
-.plate--thermal .plate__band--3 { background: rgb(255 255 255 / 30%); }
-
-.plate--underfloor { background: var(--paper); color: var(--charcoal); }
-.plate--underfloor .plate__band--1,
-.plate--underfloor .plate__band--3 { background: rgb(31 35 38 / 7%); }
-
-.plate__number {
-  position: absolute;
-  top: 6%;
-  right: 6%;
-  font-size: clamp(3rem, 7vw, 7rem);
-  font-weight: 700;
-  line-height: 1;
-}
-
-.plate__title {
-  position: absolute;
-  right: 6%;
-  bottom: 6%;
-  left: 6%;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.8vw, 3rem);
-  font-weight: 700;
-  line-height: 1.4;
 }
 
 .stage {
@@ -341,34 +264,42 @@
   background: var(--orange);
 }
 
-/* Scene D */
-.concrete {
+/* Large photo beside a service: concrete works and polyurethane */
+.concrete,
+.polyurethane {
   position: relative;
   padding-block: var(--section-space) calc(var(--edge-height) + 56px);
+}
+
+.concrete {
+  background: var(--paper);
+}
+
+.polyurethane {
   background: var(--white);
 }
 
-.concrete__row {
+.service-row {
   display: grid;
   gap: 8px;
   margin-bottom: clamp(48px, 7vw, 120px);
 }
 
-.concrete__row:last-child {
+.service-row:last-of-type {
   margin-bottom: 0;
 }
 
-.concrete__figure {
+.service-row__figure {
   position: relative;
   aspect-ratio: 3 / 2;
   overflow: hidden;
 }
 
-.concrete__figure picture {
+.service-row__figure picture {
   height: 100%;
 }
 
-.concrete__level {
+.service-row__level {
   position: absolute;
   inset: auto 6% 10%;
   height: 3px;
@@ -376,22 +307,22 @@
   transform-origin: right center;
 }
 
-.concrete .service {
+.service-row .service {
   border-top: 0;
 }
 
 @media (min-width: 1024px) {
-  .concrete__row {
+  .service-row {
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: clamp(40px, 5vw, 96px);
     align-items: center;
   }
 
-  .concrete__row:nth-of-type(even) .concrete__figure {
+  .service-row:nth-of-type(even) .service-row__figure {
     order: 2;
   }
 
-  .concrete .service .scope-list {
+  .service-row .scope-list {
     grid-template-columns: 1fr;
   }
 }

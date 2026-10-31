@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { content, type ServiceId } from '../content';
-import { useQuote } from '../hooks/useQuote';
 import { whatsappUrl } from '../utils/links';
 
 interface QuoteLinkProps {
@@ -9,19 +8,10 @@ interface QuoteLinkProps {
   children: ReactNode;
 }
 
-/** Opens the quote dialog. Without JavaScript it is a plain prefilled WhatsApp link. */
+/** Opens the quote dialog (src/client/quote.ts). Before scripts run it is a plain WhatsApp link. */
 export function QuoteLink({ service, className, children }: QuoteLinkProps) {
-  const { openQuote } = useQuote();
   return (
-    <a
-      className={className}
-      href={whatsappUrl(content.quote.fallbackMessage)}
-      aria-haspopup="dialog"
-      onClick={(event) => {
-        event.preventDefault();
-        openQuote(service);
-      }}
-    >
+    <a className={className} href={whatsappUrl(content.quote.fallbackMessage)} aria-haspopup="dialog" data-quote={service ?? ''}>
       {children}
     </a>
   );

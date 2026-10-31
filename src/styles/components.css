@@ -1,3 +1,18 @@
+/* Logo: colours resolve through the sprite's <use> references */
+.logo {
+  display: block;
+}
+
+.logo--light-bg {
+  --logo-accent: #e65a1f;
+  --logo-body: #1f2326;
+}
+
+.logo--dark-bg {
+  --logo-accent: #e65a1f;
+  --logo-body: #ffffff;
+}
+
 /* Section heading */
 .section-tab {
   position: relative;
@@ -162,11 +177,6 @@
   background: var(--charcoal);
 }
 
-html[data-intro] .site-header {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .site-header__inner {
   display: flex;
   align-items: center;
@@ -176,13 +186,13 @@ html[data-intro] .site-header {
 }
 
 .site-header__mark {
-  width: 168px;
+  width: 200px;
   height: auto;
 }
 
 @media (min-width: 1200px) {
   .site-header__mark {
-    width: 192px;
+    width: 240px;
   }
 }
 
@@ -403,8 +413,7 @@ html[data-intro] .site-header {
   transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
 }
 
-.floating-whatsapp.is-hidden,
-html[data-intro] .floating-whatsapp {
+.floating-whatsapp.is-hidden {
   visibility: hidden;
   opacity: 0;
   transform: translateY(12px);

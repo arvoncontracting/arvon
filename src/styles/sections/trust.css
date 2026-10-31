@@ -13,12 +13,22 @@
   font-size: clamp(1.7rem, 1.2rem + 1.5vw, 2.6rem);
 }
 
+.quality .heading-divider {
+  display: none;
+}
+
+.quality .section-heading .latin {
+  display: block;
+  font-size: 0.72em;
+}
+
 .experience .heading-divider {
   color: var(--charcoal);
 }
 
 .experience__item {
   position: relative;
+  border-top: 2px solid var(--charcoal);
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -26,13 +36,6 @@
   padding-block: clamp(16px, 2.6vw, 32px);
 }
 
-.experience__rule {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 2px;
-  background: var(--charcoal);
-  transform-origin: right;
-}
 
 .experience__number {
   font-size: 0.95rem;
@@ -42,16 +45,10 @@
 .experience__name {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  padding-block: 0.1em;
   font-family: var(--font-display);
   font-size: clamp(1.45rem, 0.9rem + 3.4vw, 4.6rem);
   font-weight: 700;
   line-height: 1.45;
-}
-
-.experience__name > span {
-  display: block;
 }
 
 .experience__item:last-child .experience__name {

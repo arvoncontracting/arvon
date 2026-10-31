@@ -5,6 +5,18 @@ Official website: Arabic, RTL, static, prerendered. Creative direction: *ARVON â
 Stack: React, TypeScript, Vite, custom CSS, GSAP with ScrollTrigger. Lenis is not used: native scroll with
 ScrollTrigger was smooth in testing and leaves scrolling and accessibility untouched.
 
+## How the page is delivered
+
+The page is static, so React runs once at build time (`src/entry-server.tsx`, `scripts/prerender.mjs`) and no React
+code reaches the browser. This replaced full hydration, which cost 426 kB of JavaScript and most of the mobile
+blocking time.
+
+- `index.html`: CSS intro, with a small inline script for skip and end. It needs no bundle.
+- `src/main.ts` and `src/client/`: about 5 kB. Header, mobile menu, quote dialog, floating button.
+- `src/motion/`: GSAP scenes, loaded on first scroll or after 3.5 s, and started once scrolling settles, because
+  ScrollTrigger's measuring would otherwise abort an anchor jump in progress.
+- Everything is readable before, and without, these scripts. Motion only ever adds to the default state.
+
 ## Commands
 
 | Command | Purpose |
@@ -23,7 +35,7 @@ Pushing to `main` runs `.github/workflows/deploy.yml`: tests in all three browse
 - `src/content/` all copy. `ar.ts` is the only locale; `types.ts` defines the shape a future `en.ts` would follow.
 - `src/data/` contact details, social links, image metadata.
 - `src/sections/` one component per page section. `src/components/` shared parts.
-- `src/hooks/useScrollScene.ts` scoped GSAP scenes with cleanup, breakpoints and reduced-motion handling.
+- `build/` logo artwork and the Vite plugin that injects the page's single logo sprite.
 - `src/styles/` tokens, base, components, and one stylesheet per scene group.
 - `public/images/` generated photographs. `public/brand/` generated icons.
 
@@ -34,9 +46,6 @@ Pushing to `main` runs `.github/workflows/deploy.yml`: tests in all three browse
 **A photograph:** replace the numbered file in `../Image`, keeping its number, run `npm run images`, and commit
 `public/images`. If its dimensions change, update `src/data/images.ts`, including `focus`, which sets the crop
 for wide and narrow screens. Originals are never modified.
-
-**A photograph for a service with none (foundation, thermal, underfloor):** add it to `optimize-images.mjs` and
-`images.ts`, then add `image: { id, alt }` to that service. The typographic plate is replaced automatically.
 
 **Experience details:** add `year`, `scope` or `image` to a record in `experience.records`. Empty fields do not render.
 
@@ -54,13 +63,13 @@ language switch is shown until that exists.
 
 ## Logo
 
-The brand package supplied only a PDF with a raster board, so `src/components/logoArtwork.ts` is a
-colour-separated trace of that approved artwork (`scripts/trace-logo.mjs`, `scripts/emit-logo-module.mjs`, which
-need `potrace` installed separately). It is suitable for screen use. The guidelines require original vector
-artwork for print and signage: when the vector master is available, replace the paths in that file.
+The brand package supplied only a PDF with a raster board, so `build/logoArtwork.ts` is a colour-separated trace of
+that approved artwork (`scripts/trace-logo.mjs`, `scripts/emit-logo-module.mjs`, which need `potrace` installed
+separately). It is suitable for screen use. The guidelines require original vector artwork for print and signage:
+when the vector master is available, replace the paths in that file.
 
-The Arabic lockup uses the standalone symbol, because the board's lockups draw the symbol at a different
-proportion (about 1.65:1) from the master logo (about 1.83:1). Neither is stretched to match the other.
+The navigation bar uses the horizontal English arrangement from board lockup 06, positioned by `src/data/logoGeometry.ts`.
+The stacked master would need a bar over 100 px tall to stay above the 140 px minimum width.
 
 ## Accessibility note on colour
 

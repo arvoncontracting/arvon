@@ -1,9 +1,39 @@
+/*
+ * The intro is pure CSS over the already painted hero, about two seconds long:
+ * welcome, logo, then two charcoal planes part along the symbol's slope.
+ * It needs no bundle, ends by itself, and lets clicks through once open.
+ */
 .intro {
+  display: none;
+}
+
+html[data-intro] .intro {
   position: fixed;
   inset: 0;
   z-index: 100;
+  display: block;
   overflow: hidden;
   color: var(--white);
+  pointer-events: none;
+  animation: intro-end 0.01s linear 2.05s forwards;
+}
+
+.hero__content,
+.hero__pillars {
+  --hero-delay: 1.72s;
+}
+
+/* The logo needs the stage to itself; hero text arrives as it leaves. */
+html[data-intro] .hero__content,
+html[data-intro] .hero__pillars {
+  animation: hero-in 0.35s ease-out var(--hero-delay) both;
+}
+
+.intro__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(31 35 38 / 58%);
+  animation: fade-out 0.45s ease-out 1.6s forwards;
 }
 
 .intro__rig {
@@ -12,6 +42,7 @@
   left: 50%;
   width: 320vmax;
   height: 320vmax;
+  transform: translate(-50%, -50%) rotate(-51.4deg);
 }
 
 .intro__plane {
@@ -23,8 +54,15 @@
   will-change: transform;
 }
 
-.intro__plane--a { top: 0; }
-.intro__plane--b { bottom: 0; }
+.intro__plane--a {
+  top: 0;
+  animation: plane-up 0.62s cubic-bezier(0.76, 0, 0.24, 1) 1.02s forwards;
+}
+
+.intro__plane--b {
+  bottom: 0;
+  animation: plane-down 0.62s cubic-bezier(0.76, 0, 0.24, 1) 1.02s forwards;
+}
 
 .intro__welcome {
   position: absolute;
@@ -36,23 +74,35 @@
   font-size: clamp(1.9rem, 5.4vw, 3.6rem);
   font-weight: 700;
   text-align: center;
+  animation: welcome 0.62s ease both;
 }
 
 .intro__logo {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(230px, 34vw, 460px);
-  margin-left: calc(clamp(230px, 34vw, 460px) / -2);
-  margin-top: calc(clamp(230px, 34vw, 460px) * -0.333);
-  visibility: hidden;
-  will-change: transform;
+  width: clamp(230px, 32vw, 440px);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: logo-life 1.43s linear 0.58s both;
 }
 
 .intro__logo svg {
   width: 100%;
   height: auto;
   overflow: visible;
+}
+
+.intro__roof {
+  animation: roof-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.58s both;
+}
+
+.intro__pier {
+  animation: pier-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.64s both;
+}
+
+.intro__word {
+  animation: word-in 0.32s ease-in-out 0.72s both;
 }
 
 .intro__skip {
@@ -66,8 +116,42 @@
   color: var(--white);
   font-size: 0.95rem;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .intro__skip:hover {
   border-color: var(--white);
+}
+
+@keyframes hero-in {
+  from { opacity: 0; }
+}
+
+@keyframes intro-end { to { visibility: hidden; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes plane-up { to { transform: translateY(-100%); } }
+@keyframes plane-down { to { transform: translateY(100%); } }
+
+@keyframes welcome {
+  0% { opacity: 0; transform: translateY(16px); }
+  30%, 72% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes logo-life {
+  0%, 74% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes roof-in {
+  from { opacity: 0; transform: translate(-420px, 530px); }
+}
+
+@keyframes pier-in {
+  from { opacity: 0; transform: translate(340px, 480px); }
+}
+
+@keyframes word-in {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
 }

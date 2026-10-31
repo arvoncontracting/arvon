@@ -1,50 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
 import { content } from '../content';
 import { Icon } from './Icon';
 import { Logo } from './Logo';
-import { gsap } from '../utils/gsap';
-import { useIsomorphicLayoutEffect } from '../hooks/useIsomorphicLayoutEffect';
 
 const { nav } = content;
 
+/** Static markup; scroll state and the menu live in src/client/header.ts. */
 export function SiteHeader() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDialogElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useIsomorphicLayoutEffect(() => {
-    const tween = gsap.fromTo(
-      progressRef.current,
-      { scaleX: 0 },
-      { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } },
-    );
-    return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
-    };
-  }, []);
-
-  useEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-    if (menuOpen && !menu.open) menu.showModal();
-    if (!menuOpen && menu.open) menu.close();
-  }, [menuOpen]);
-
   return (
     <>
-      <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
+      <header className="site-header">
         <div className="site-header__inner">
           <a className="site-header__logo" href="#top" aria-label={nav.home}>
-            <Logo variant="arabic" tone="dark-bg" className="site-header__mark" />
+            <Logo variant="horizontal" tone="dark-bg" className="site-header__mark" />
           </a>
           <nav className="site-header__nav" aria-label={nav.menuTitle}>
             <ul>
@@ -58,24 +25,17 @@ export function SiteHeader() {
           <a className="button button--primary button--small site-header__cta" href="#contact">
             {nav.contactCta}
           </a>
-          <button
-            type="button"
-            className="icon-button site-header__toggle"
-            aria-label={nav.menuOpen}
-            aria-haspopup="dialog"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(true)}
-          >
+          <button type="button" className="icon-button site-header__toggle" aria-label={nav.menuOpen} aria-haspopup="dialog" aria-expanded="false">
             <Icon name="menu" size={26} />
           </button>
         </div>
-        <div ref={progressRef} className="site-header__progress" aria-hidden="true" />
+        <div className="site-header__progress" aria-hidden="true" />
       </header>
 
-      <dialog ref={menuRef} className="mobile-menu" aria-label={nav.menuTitle} onClose={() => setMenuOpen(false)}>
+      <dialog className="mobile-menu" aria-label={nav.menuTitle}>
         <div className="mobile-menu__head">
-          <Logo variant="arabic" tone="dark-bg" className="site-header__mark" />
-          <button type="button" className="icon-button" aria-label={nav.menuClose} onClick={() => setMenuOpen(false)}>
+          <Logo variant="horizontal" tone="dark-bg" className="site-header__mark" />
+          <button type="button" className="icon-button" aria-label={nav.menuClose} data-close>
             <Icon name="close" size={26} />
           </button>
         </div>
@@ -83,7 +43,7 @@ export function SiteHeader() {
           <ul>
             {[...nav.items, { label: nav.contactCta, href: '#contact' }].map((item) => (
               <li key={item.href}>
-                <a href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>
+                <a href={item.href}>{item.label}</a>
               </li>
             ))}
           </ul>

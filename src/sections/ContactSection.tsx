@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { content } from '../content';
 import { contact, socialLinks } from '../data/contact';
 import { Icon } from '../components/Icon';
@@ -9,9 +8,9 @@ import { mailtoUrl, telUrl, whatsappUrl } from '../utils/links';
 
 const { contact: copy, partners } = content;
 
-export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_props, ref) {
+export function ContactSection() {
   return (
-    <section ref={ref} id="contact" className="contact" aria-labelledby="contact-title">
+    <section id="contact" className="contact" aria-labelledby="contact-title">
       <div className="wrap contact__grid">
         <div>
           <SectionHeading id="contact-title" eyebrow={copy.eyebrow} title={copy.title} body={copy.body} />
@@ -71,4 +70,4 @@ export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_p
       </div>
     </section>
   );
-});
+}

@@ -125,22 +125,6 @@ textarea {
   transform: none;
 }
 
-/* The curtain covers the page until the intro mounts, and lifts on its own if scripts never run. */
-html[data-intro='pending'] body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-  background: var(--charcoal);
-  animation: curtain-failsafe 0s linear 5s forwards;
-}
-
-@keyframes curtain-failsafe {
-  to {
-    visibility: hidden;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

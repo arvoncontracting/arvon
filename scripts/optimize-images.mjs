@@ -20,6 +20,9 @@ const photos = [
   { id: 'slope-screed', source: '5.jpeg' },
   { id: 'power-trowel', source: '6.jpeg' },
   { id: 'polyurethane', source: '7.jpeg' },
+  { id: 'foundation', source: '8.jpeg' },
+  { id: 'thermal-insulation', source: '9.jpeg' },
+  { id: 'underfloor', source: '10.jpeg' },
 ];
 
 await mkdir(outDir, { recursive: true });
@@ -39,4 +42,12 @@ for (const photo of photos) {
   await base().resize({ width: Math.min(1200, sourceWidth) }).jpeg({ quality: 78, mozjpeg: true })
     .toFile(path.join(outDir, `${photo.id}.jpg`));
   console.log(`${photo.id}: ${sourceWidth}x${sourceHeight} -> ${targets.join(', ')}`);
+}
+
+// Portrait hero crop for phones: towers and mosque, at a fraction of the wide file's weight.
+const portrait = { left: 400, top: 0, width: 660, height: 1006 };
+for (const width of [480, 660]) {
+  const crop = () => sharp(path.join(sourceDir, '1.jpeg')).extract(portrait).resize({ width });
+  await crop().avif({ quality: 48, effort: 6 }).toFile(path.join(outDir, `amman-skyline-portrait-${width}.avif`));
+  await crop().webp({ quality: 70, effort: 6 }).toFile(path.join(outDir, `amman-skyline-portrait-${width}.webp`));
 }
