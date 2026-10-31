@@ -51,6 +51,8 @@ export function IntroSequence() {
     const logo = q('.intro__logo')[0];
     const target = document.querySelector<HTMLElement>('.hero__logo');
 
+    // Keep wall-clock timing: slow devices drop frames instead of waiting longer.
+    gsap.ticker.lagSmoothing(0);
     const tl = gsap.timeline({ onComplete: finish });
     timelineRef.current = tl;
 
@@ -83,10 +85,11 @@ export function IntroSequence() {
     }
 
     // Safety net so a stalled timeline can never leave the visitor behind the curtain.
-    const failsafe = window.setTimeout(finish, 4500);
+    const failsafe = window.setTimeout(finish, 4000);
     return () => {
       window.clearTimeout(failsafe);
       tl.kill();
+      gsap.ticker.lagSmoothing(500, 33);
     };
   }, [active, finish]);
 

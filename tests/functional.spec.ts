@@ -4,8 +4,8 @@ import { open, scrollThrough } from './helpers';
 test.describe('intro', () => {
   test('plays once, about three seconds, then does not replay', async ({ page }) => {
     await page.goto('./', { waitUntil: 'commit' });
-    const started = Date.now();
     await expect(page.locator('.intro')).toBeVisible();
+    const started = Date.now();
     await expect(page.getByText('أهلًا وسهلًا بكم', { exact: true })).toBeVisible();
     await expect(page.locator('.intro')).toHaveCount(0, { timeout: 6000 });
     expect(Date.now() - started).toBeLessThan(4500);
